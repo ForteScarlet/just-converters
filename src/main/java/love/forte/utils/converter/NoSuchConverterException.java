@@ -1,6 +1,5 @@
 package love.forte.utils.converter;
 
-import java.util.IllegalFormatException;
 import java.util.NoSuchElementException;
 
 /**

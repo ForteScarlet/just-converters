@@ -2,8 +2,6 @@ package love.forte.utils.converter;
 
 import org.jetbrains.annotations.Contract;
 
-import java.util.Objects;
-
 /**
  * @author ForteScarlet
  */
