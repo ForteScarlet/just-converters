@@ -32,8 +32,7 @@ public interface StringSourceConverter extends Converter {
     }
 
     /**
-     * 提供一个转化目标和类型并尝试进行转化。{@code source} 必须为 {@link String 字符串} 类型，
-     * 否则将会抛出 {@link IllegalArgumentException} .
+     * 提供一个转化目标和类型并尝试进行转化。
      *
      * @param source 预计被转化的目标对象
      * @param target 预计被转化为的目标类型。

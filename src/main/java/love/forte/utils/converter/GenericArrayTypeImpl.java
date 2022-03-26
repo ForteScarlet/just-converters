@@ -22,5 +22,8 @@ public final class GenericArrayTypeImpl implements GenericArrayType {
         return genericComponentType;
     }
 
-
+    @Override
+    public String toString() {
+        return genericComponentType.getTypeName() + "[]";
+    }
 }

@@ -11,7 +11,6 @@ import java.util.Objects;
  * 针对 {@link ParameterizedType} 的基础实现，用于提供一个 “伪” {@link ParameterizedType} 实例对象。
  *
  * @author ForteScarlet 引用类型
- *
  * @see #resolve(Class, Type, Type...)
  * @see TypeUtil
  */
@@ -82,6 +81,41 @@ public final class GenericReferenceType implements ParameterizedType {
 
     @Override
     public String toString() {
-        return rawType.toString();
+        StringBuilder sb = new StringBuilder();
+
+        if (ownerType != null) {
+            if (ownerType instanceof Class) {
+                sb.append(((Class<?>) ownerType).getName());
+            } else {
+                sb.append(ownerType);
+            }
+
+            sb.append("$");
+
+            if (ownerType instanceof GenericReferenceType) {
+                sb.append(rawType.getName().replace(((GenericReferenceType) ownerType).rawType.getName() + "$", ""));
+            } else {
+                sb.append(rawType.getSimpleName());
+            }
+        } else {
+            sb.append(rawType.getName());
+        }
+
+        if (actualTypeArguments != null &&
+                actualTypeArguments.length > 0) {
+            sb.append("<");
+            boolean first = true;
+            for (Type t : actualTypeArguments) {
+                if (!first) {
+                    sb.append(", ");
+                }
+                sb.append(t.getTypeName());
+                first = false;
+            }
+            sb.append(">");
+        }
+
+        return sb.toString();
     }
+
 }
