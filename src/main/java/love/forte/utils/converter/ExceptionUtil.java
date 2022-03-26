@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Contract;
 /**
  * @author ForteScarlet
  */
-public final class ExceptionUtil {
+final class ExceptionUtil {
 
     @Contract("_, _ -> fail")
     public static <T> T sourceIllegalArgument(String mustBe, String butIs) {
