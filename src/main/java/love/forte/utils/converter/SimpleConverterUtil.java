@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -27,6 +28,10 @@ public final class SimpleConverterUtil implements ConverterUtil {
 
     private SimpleConverterUtil(Map<String, Map<String, Converter>> converters) {
         this.converters = converters;
+    }
+
+    public static SimpleConverterUtil getInstance() {
+        return new SimpleConverterUtil(new LinkedHashMap<>());
     }
 
     /**

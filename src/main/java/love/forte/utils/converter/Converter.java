@@ -23,7 +23,8 @@ public interface Converter {
      * @return 转化结果。
      * @throws NullPointerException     当参数出现null时。
      * @throws ConvertException         当出现无法进行类型转化的情况时。
-     * @throws IllegalArgumentException 当 target 为不支持的实现类型时。
+     * @throws IllegalArgumentException 当 {@code source} 或 {@code target} 为不支持的实现类型时。
+     * @throws ClassCastException       可能会由于种种原因而导致的类型转化异常。
      */
     <T> T convert(@NotNull Object source, @NotNull Type target);
 
