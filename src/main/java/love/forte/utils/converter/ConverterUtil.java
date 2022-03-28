@@ -60,6 +60,9 @@ public interface ConverterUtil {
 
 }
 
+/**
+ * Default instance of {@link ConverterUtil}.
+ */
 class DefaultInstance {
     static final ConverterUtil DEFAULT_INSTANCE;
     static {
