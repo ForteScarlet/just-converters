@@ -66,7 +66,7 @@ public interface ConverterUtil {
 class DefaultInstance {
     static final ConverterUtil DEFAULT_INSTANCE;
     static {
-        // TODO include default converters
+        // include default converters
         DEFAULT_INSTANCE = SimpleConverterUtil.getInstance();
     }
 }

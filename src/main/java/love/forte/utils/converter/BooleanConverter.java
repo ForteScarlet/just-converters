@@ -14,7 +14,7 @@ public abstract class BooleanConverter extends ClassTargetConverter {
             return convertBoolean(source);
         }
 
-        return ExceptionUtil.targetIllegalArgument("Class<java.lang.Boolean> or Class<java.lang.boolean>", target.toString());
+        return ConverterExceptionUtil.targetIllegalArgument("Class<java.lang.Boolean> or Class<java.lang.boolean>", target.toString());
     }
 
     /**

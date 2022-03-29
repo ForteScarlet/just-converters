@@ -22,7 +22,7 @@ public abstract class ClassTargetConverter implements Converter {
             return targetClass.cast(target);
         }
 
-        return ExceptionUtil.targetIllegalArgument("java.lang.Class", target);
+        throw ConverterExceptionUtil.targetIllegalArgument("java.lang.Class", target);
     }
 
     /**

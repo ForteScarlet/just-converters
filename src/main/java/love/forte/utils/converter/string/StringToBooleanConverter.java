@@ -1,5 +1,8 @@
-package love.forte.utils.converter;
+package love.forte.utils.converter.string;
 
+import love.forte.utils.converter.BooleanConverter;
+import love.forte.utils.converter.ConverterExceptionUtil;
+import love.forte.utils.converter.StringSourceConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
@@ -21,7 +24,7 @@ public final class StringToBooleanConverter extends BooleanConverter implements 
             return convertBoolean((String) source);
         }
 
-        return ExceptionUtil.sourceIllegalArgument("java.lang.String", source);
+        throw ConverterExceptionUtil.sourceIllegalArgument("java.lang.String", source);
     }
 
     @SuppressWarnings("unchecked")
@@ -31,7 +34,7 @@ public final class StringToBooleanConverter extends BooleanConverter implements 
             return (T) ((Boolean) convertBoolean(source));
         }
 
-        return ExceptionUtil.targetIllegalArgument("Class<Boolean> or Class<boolean>", target.toString());
+        throw ConverterExceptionUtil.targetIllegalArgument("Class<Boolean> or Class<boolean>", target.toString());
     }
 
 

@@ -28,7 +28,7 @@ public interface StringSourceConverter extends Converter {
             return convert((String) source, target);
         }
 
-        return ExceptionUtil.sourceIllegalArgument("java.lang.String", source);
+        throw ConverterExceptionUtil.sourceIllegalArgument("java.lang.String", source);
     }
 
     /**

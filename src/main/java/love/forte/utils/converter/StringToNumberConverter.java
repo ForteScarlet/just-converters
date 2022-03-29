@@ -41,7 +41,7 @@ public abstract class StringToNumberConverter<N extends Number> extends NumberCo
             return ((Class<T>) target).cast(converted);
         }
 
-        return ExceptionUtil.targetIllegalArgument("java.lang.Class<? extends Number>", target);
+        throw ConverterExceptionUtil.targetIllegalArgument("java.lang.Class<? extends Number>", target);
     }
 
     @Override
@@ -50,7 +50,7 @@ public abstract class StringToNumberConverter<N extends Number> extends NumberCo
             return convertNumber((String) source);
         }
 
-        return ExceptionUtil.sourceIllegalArgument("java.lang.String", source);
+        throw ConverterExceptionUtil.sourceIllegalArgument("java.lang.String", source);
     }
 
     /**

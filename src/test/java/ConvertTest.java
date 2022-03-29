@@ -1,6 +1,6 @@
 import love.forte.utils.converter.ConverterUtil;
-import love.forte.utils.converter.StringToBooleanConverter;
 import love.forte.utils.converter.StringToNumberConverter;
+import love.forte.utils.converter.string.StringToBooleanConverter;
 import org.junit.jupiter.api.Test;
 
 /**

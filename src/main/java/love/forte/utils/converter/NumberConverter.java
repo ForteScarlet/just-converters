@@ -17,7 +17,7 @@ public abstract class NumberConverter<N extends Number> extends ClassTargetConve
             return convertNumber(source);
         }
 
-        return ExceptionUtil.targetIllegalArgument(expected.toString(), source);
+        return ConverterExceptionUtil.targetIllegalArgument(expected.toString(), source);
     }
 
 
