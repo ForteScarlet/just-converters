@@ -48,6 +48,24 @@ public class StringToArrayConverter implements StringSourceConverter {
     }
 
 
+    /**
+     * 将目标字符串转化为数组。
+     * <p>
+     * <b>需要注意，无法转化为基础数据类型的数组，例如 {@code int[]}.
+     * TODO fix
+     * </b>
+     * <p>
+     * 列表元素 {@code elementType} 支持的类型有：
+     * <ul>
+     *     <li>null / Object (作为字符串处理)</li>
+     *     <li>String</li>
+     *     <li>Number (会通过 {@link StringToNumberConverter} 下的相关转化器进行转化 )</li>
+     * </ul>
+     *
+     * @param source 目标对象
+     * @param target 元素类型
+     * @return 列表结果
+     */
     @Override
     public <T> T convert(@NotNull String source, @NotNull Type target) {
         if (target instanceof Class) {
@@ -59,20 +77,32 @@ public class StringToArrayConverter implements StringSourceConverter {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T convert0(String source, Class<?> target) {
-        // TODO
-        return null;
+        if (target.isArray()) {
+            return (T) convertToArray(source, target.getComponentType());
+        }
+
+        throw ConverterExceptionUtil.targetIllegalArgument("Array type", target.toString());
     }
 
 
     private <T> T convert0(String source, ParameterizedType target) {
-        // TODO
-        return null;
+        if (target.getActualTypeArguments().length == 0) {
+            final Type rawType = target.getRawType();
+            if (rawType instanceof Class) {
+                return convert0(source, (Class<?>) rawType);
+            }
+        }
+
+        throw ConverterExceptionUtil.targetIllegalArgument("Raw type of 'target'", "Array type", target.getRawType().toString());
     }
 
 
     /**
      * 将目标字符串转化为数组。
+     * <p>
+     * <b>需要注意，无法转化为基础数据类型的数组，例如 {@code int[]}.</b>
      * <p>
      * 列表元素 {@code elementType} 支持的类型有：
      * <ul>
@@ -100,7 +130,8 @@ public class StringToArrayConverter implements StringSourceConverter {
                 elementClass = Object.class;
                 targetConverter = str2Str();
             } else {
-                elementClass = (Class<?>) elementType;
+                final TypeUtil.PrimitiveType primitiveType = TypeUtil.PrimitiveType.findByType(elementType);
+                elementClass = primitiveType == null ? (Class<?>) elementType : primitiveType.getType();
                 targetConverter = numberOrOtherConverter(elementType);
             }
         } else {

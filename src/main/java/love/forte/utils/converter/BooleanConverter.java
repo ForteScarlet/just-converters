@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class BooleanConverter extends ClassTargetConverter {
     @Override
-    protected Object convert(@NotNull Object source, @NotNull Class<?> target) {
+    protected Object convertByClass(@NotNull Object source, @NotNull Class<?> target) {
         if (Boolean.class.equals(target) || boolean.class.equals(target)) {
             return convertBoolean(source);
         }

@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class NumberConverter<N extends Number> extends ClassTargetConverter {
 
     @Override
-    protected Object convert(@NotNull Object source, @NotNull Class<?> target) {
+    protected Object convertByClass(@NotNull Object source, @NotNull Class<?> target) {
         final Class<N> expected = getExpected();
 
         if (expected.equals(target)) {

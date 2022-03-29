@@ -33,7 +33,7 @@ public abstract class ClassTargetConverter implements Converter {
      * @param target 期望的目标类型
      * @return 转化结果。会通过 {@link Class#cast} 进行转化。
      */
-    protected abstract Object convert(@NotNull Object source, @NotNull Class<?> target);
+    protected abstract Object convertByClass(@NotNull Object source, @NotNull Class<?> target);
 
 
 }
