@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author ForteScarlet
  */
-public class ConvertTest {
+public class Str2NumTest {
 
     private static final ConverterUtil CONVERTER_UTIL = ConverterUtil.getDefault();
 

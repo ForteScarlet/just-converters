@@ -67,6 +67,6 @@ class DefaultInstance {
     static final ConverterUtil DEFAULT_INSTANCE;
     static {
         // include default converters
-        DEFAULT_INSTANCE = SimpleConverterUtil.getInstance();
+        DEFAULT_INSTANCE = SimpleConverterUtil.createInstance();
     }
 }

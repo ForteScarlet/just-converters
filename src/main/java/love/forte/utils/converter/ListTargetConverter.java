@@ -23,7 +23,6 @@ public abstract class ListTargetConverter implements Converter {
      * @param <T>    目标类型
      * @return converted value
      */
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T convert(@NotNull Object source, @NotNull Type target) {
         if (target instanceof Class) {
@@ -37,7 +36,7 @@ public abstract class ListTargetConverter implements Converter {
 
 
     @SuppressWarnings("unchecked")
-    private <T> T convert0(@NotNull Object source, @NotNull Class<?> target) {
+    protected <T> T convert0(@NotNull Object source, @NotNull Class<?> target) {
         if (List.class.isAssignableFrom(target)) {
             return convert(source, (Class<List<?>>) target, null);
         }
@@ -47,7 +46,7 @@ public abstract class ListTargetConverter implements Converter {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T convert0(@NotNull Object source, @NotNull ParameterizedType target) {
+    protected <T> T convert0(@NotNull Object source, @NotNull ParameterizedType target) {
         final Type rawType = target.getRawType();
         if (rawType instanceof Class) {
             Class<?> classTarget = (Class<?>) rawType;

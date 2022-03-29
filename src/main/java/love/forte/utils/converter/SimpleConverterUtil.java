@@ -31,14 +31,23 @@ public final class SimpleConverterUtil implements ConverterUtil {
         this.calculationConverterLocator = calculationConverterLocator;
     }
 
-
-    public static SimpleConverterUtil getInstance(PrecisionConverterLocator precisionConverterLocator, CalculationConverterLocator calculationConverterLocator) {
+    /**
+     * 提供解析定位器并构建一个实例。
+     *
+     * @return {@link SimpleConverterUtil}
+     */
+    public static SimpleConverterUtil createInstance(PrecisionConverterLocator precisionConverterLocator, CalculationConverterLocator calculationConverterLocator) {
         return new SimpleConverterUtil(precisionConverterLocator, calculationConverterLocator);
     }
 
 
-    public static SimpleConverterUtil getInstance() {
-        return getInstance(new PrecisionConverterLocator(), new CalculationConverterLocator());
+    /**
+     * 构建一个默认的无参实例。
+     *
+     * @return {@link SimpleConverterUtil}
+     */
+    public static SimpleConverterUtil createInstance() {
+        return createInstance(new PrecisionConverterLocator(), new CalculationConverterLocator());
     }
 
 
@@ -53,10 +62,11 @@ public final class SimpleConverterUtil implements ConverterUtil {
     @Override
     public <T> T convert(@NotNull Object source, @NotNull Type target) {
         // 优先通过精准定位器查询。
-        Converter converter = precisionConverterLocator.matchConverter(source, target);
+        Converter converter = matchConverter(precisionConverterLocator, source, target);
         if (converter == null) {
-            converter = calculationConverterLocator.matchConverter(source, target);
+            converter = matchConverter(precisionConverterLocator, source, target);
         }
+
         if (converter == null) {
             throw new NoSuchConverterException(source.getClass().getName(), target.getTypeName());
         }
@@ -64,11 +74,23 @@ public final class SimpleConverterUtil implements ConverterUtil {
         return converter.convert(source, target);
     }
 
+    private Converter matchConverter(ConverterLocator locator, Object source, Type target) {
+        return locator.matchConverter(source, target);
+    }
 
+
+    /**
+     * 得到当前的精准定位器。
+     * @return 精准定位器
+     */
     public PrecisionConverterLocator getPrecisionConverterLocator() {
         return precisionConverterLocator;
     }
 
+    /**
+     * 得到当前的条件定位器。
+     * @return 条件定位器
+     */
     public CalculationConverterLocator getCalculationConverterLocator() {
         return calculationConverterLocator;
     }
