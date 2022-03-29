@@ -8,21 +8,21 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
- * 将字符串转化为列表的转化器。
+ * 将字符串转化为集合的转化器。
  * <p>
  * 当字符串符合 {@code str1,str2,str3} 的规则时，会逗号({@code ,}) 作为分隔符截取元素内容。
  * 此类的实现中，允许逗号({@code ,}) 前后分别额外存在 <b>至多一个</b> 空格字符。
  *
+ * @see StringToArrayConverter
  * @author ForteScarlet
  */
-public class StringToListConverter extends ListTargetConverter implements StringSourceConverter {
+public class StringToCollectionConverter extends CollectionTargetConverter implements StringSourceConverter {
     private static final String DEFAULT_SPLIT_PATTERN = " ?, ?";
     private static final Pattern SPLIT_PATTERN = Pattern.compile(DEFAULT_SPLIT_PATTERN);
     private static final Function<String, String> DEFAULT_STR_2_STR_CONVERTER = (str) -> str;
@@ -37,7 +37,7 @@ public class StringToListConverter extends ListTargetConverter implements String
      *
      * @param otherTypeConverterUtilFactory factory.
      */
-    public StringToListConverter(Supplier<ConverterUtil> otherTypeConverterUtilFactory) {
+    public StringToCollectionConverter(Supplier<ConverterUtil> otherTypeConverterUtilFactory) {
         if (otherTypeConverterUtilFactory == null) {
             this.otherTypeConverterUtilFactory = DEFAULT_CONVERTER_UTIL_FACTORY;
         } else {
@@ -45,15 +45,15 @@ public class StringToListConverter extends ListTargetConverter implements String
         }
     }
 
-    public StringToListConverter() {
+    public StringToCollectionConverter() {
         this(null);
     }
 
 
     @Override
-    public <T, LT extends List<T>> LT convert(@NotNull Object source, @NotNull Class<List<?>> targetListType, @Nullable Type elementType) {
+    public <T, LT extends Collection<T>> LT convert(@NotNull Object source, @NotNull Class<Collection<?>> targetCollectionType, @Nullable Type elementType) {
         if (source instanceof String) {
-            return convert((String) source, targetListType, elementType);
+            return convert((String) source, targetCollectionType, elementType);
         }
 
         throw ConverterExceptionUtil.sourceIllegalArgument("java.lang.String", source);
@@ -81,13 +81,13 @@ public class StringToListConverter extends ListTargetConverter implements String
      *     <li>Number (会通过 {@link love.forte.utils.converter.StringToNumberConverter} 下的相关转化器进行转化 )</li>
      * </ul>
      *
-     * @param source         目标对象
-     * @param targetListType 列表类型
-     * @param elementType    元素类型
+     * @param source               目标对象
+     * @param targetCollectionType 列表类型
+     * @param elementType          元素类型
      * @return 列表结果
      */
     @SuppressWarnings("unchecked")
-    public <T, LT extends List<T>> LT convert(@NotNull String source, @NotNull Class<List<?>> targetListType, @Nullable Type elementType) {
+    public <T, LT extends Collection<T>> LT convert(@NotNull String source, @NotNull Class<Collection<?>> targetCollectionType, @Nullable Type elementType) {
         final Function<String, T> targetConverter;
         if (null == elementType) {
             targetConverter = str2Str();
@@ -95,83 +95,90 @@ public class StringToListConverter extends ListTargetConverter implements String
             if (elementType.equals(String.class) || elementType.equals(Object.class)) {
                 targetConverter = str2Str();
             } else {
-                // not string.
-                // if number?
-                final TypeUtil.PrimitiveType primitiveType = TypeUtil.PrimitiveType.findByType(elementType);
-                if (primitiveType != null) {
-                    if (Number.class.isAssignableFrom(primitiveType.getType())) {
-                        // is type of number
-                        final StringToNumberConverter<?> toNumberConverter;
-                        switch (primitiveType) {
-                            case BYTE:
-                                toNumberConverter = StringToNumberConverter.ToByte.INSTANCE;
-                                break;
-                            case SHORT:
-                                toNumberConverter = StringToNumberConverter.ToShort.INSTANCE;
-                                break;
-                            case INT:
-                                toNumberConverter = StringToNumberConverter.ToInt.INSTANCE;
-                                break;
-                            case LONG:
-                                toNumberConverter = StringToNumberConverter.ToLong.INSTANCE;
-                                break;
-                            case DOUBLE:
-                                toNumberConverter = StringToNumberConverter.ToDouble.INSTANCE;
-                                break;
-                            case FLOAT:
-                                toNumberConverter = StringToNumberConverter.ToFloat.INSTANCE;
-                                break;
-                            default: toNumberConverter = null;
-                        }
-
-                        if (toNumberConverter != null) {
-                            targetConverter = (str) -> (T) toNumberConverter.convertNumber(str);
-                        } else {
-                            // not primitive number
-                            targetConverter = otherConverter(elementType);
-                        }
-
-                    } else {
-                        // not number
-                        targetConverter = otherConverter(elementType);
-                    }
-                } else {
-                    // not primitive
-                    targetConverter = otherConverter(elementType);
-                }
-
+                targetConverter = numberOrOtherConverter(elementType);
             }
         } else {
             throw ConverterExceptionUtil.targetIllegalArgument("'Element type'", "", elementType.getClass());
         }
 
-        final LT list;
+        final LT collection;
         final String[] splitArray;
 
-        if (targetListType.equals(List.class)) {
+        if (targetCollectionType.equals(List.class)) {
             splitArray = SPLIT_PATTERN.split(source);
-            list = (LT) new ArrayList<>(splitArray.length);
+            collection = (LT) new ArrayList<>(splitArray.length);
+        } else if (targetCollectionType.equals(Set.class)) {
+            splitArray = SPLIT_PATTERN.split(source);
+            collection = (LT) new HashSet<>(splitArray.length);
         } else {
             // try to create instance.
             try {
-                final Constructor<List<?>> constructor = targetListType.getConstructor();
-                list = (LT) constructor.newInstance();
+                final Constructor<?> constructor = targetCollectionType.getConstructor();
+                collection = (LT) constructor.newInstance();
             } catch (ClassCastException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new ConvertException("Cannot to create instance for list type " + targetListType + ": " + e.getLocalizedMessage(), e);
+                throw new ConvertException("Cannot to create instance for collection type " + targetCollectionType + ": " + e.getLocalizedMessage(), e);
             }
 
+            // 在实例化之后split以避免无用功
             splitArray = SPLIT_PATTERN.split(source);
         }
 
 
         for (String str : splitArray) {
-            list.add(targetConverter.apply(str));
+            collection.add(targetConverter.apply(str));
         }
 
 
-        return list;
+        return collection;
     }
 
+
+    @SuppressWarnings("unchecked")
+    private <T> Function<String, T> numberOrOtherConverter(Type elementType) {
+        final TypeUtil.PrimitiveType primitiveType = TypeUtil.PrimitiveType.findByType(elementType);
+        if (primitiveType != null) {
+            if (Number.class.isAssignableFrom(primitiveType.getType())) {
+                // is type of number
+                final StringToNumberConverter<?> toNumberConverter;
+                switch (primitiveType) {
+                    case BYTE:
+                        toNumberConverter = StringToNumberConverter.ToByte.INSTANCE;
+                        break;
+                    case SHORT:
+                        toNumberConverter = StringToNumberConverter.ToShort.INSTANCE;
+                        break;
+                    case INT:
+                        toNumberConverter = StringToNumberConverter.ToInt.INSTANCE;
+                        break;
+                    case LONG:
+                        toNumberConverter = StringToNumberConverter.ToLong.INSTANCE;
+                        break;
+                    case DOUBLE:
+                        toNumberConverter = StringToNumberConverter.ToDouble.INSTANCE;
+                        break;
+                    case FLOAT:
+                        toNumberConverter = StringToNumberConverter.ToFloat.INSTANCE;
+                        break;
+                    default:
+                        toNumberConverter = null;
+                }
+
+                if (toNumberConverter != null) {
+                    return (str) -> (T) toNumberConverter.convertNumber(str);
+                } else {
+                    // not primitive number
+                    return otherConverter(elementType);
+                }
+
+            } else {
+                // not number
+                return otherConverter(elementType);
+            }
+        } else {
+            // not primitive
+            return otherConverter(elementType);
+        }
+    }
 
 
     private <T> Function<String, T> otherConverter(Type targetType) {

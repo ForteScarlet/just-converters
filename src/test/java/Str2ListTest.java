@@ -1,6 +1,6 @@
 import love.forte.utils.converter.ConverterUtil;
 import love.forte.utils.converter.TypeUtil;
-import love.forte.utils.converter.string.StringToListConverter;
+import love.forte.utils.converter.string.StringToCollectionConverter;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class Str2ListTest {
     private static final ConverterUtil CONVERTER_UTIL = ConverterUtil.getDefault();
-    private static final StringToListConverter STRING_TO_LIST_CONVERTER = new StringToListConverter();
+    private static final StringToCollectionConverter STRING_TO_LIST_CONVERTER = new StringToCollectionConverter();
 
     @Test
     public void str2StrList() {

@@ -5,15 +5,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 
 /**
- * 转化的结果目标为 {@link java.util.List} 的转化器。
+ * 转化的结果目标为 {@link java.util.Collection} 的转化器。
  * 默认将会使用 {@link java.util.ArrayList} 作为最终类型。
  *
  * @author ForteScarlet
  */
-public abstract class ListTargetConverter implements Converter {
+public abstract class CollectionTargetConverter implements Converter {
 
     /**
      * 将 source 转化为目标的列表类型。{@code target} 必须保证为列表类型，且至多存在一个元素泛型。
@@ -37,8 +38,8 @@ public abstract class ListTargetConverter implements Converter {
 
     @SuppressWarnings("unchecked")
     protected <T> T convert0(@NotNull Object source, @NotNull Class<?> target) {
-        if (List.class.isAssignableFrom(target)) {
-            return convert(source, (Class<List<?>>) target, null);
+        if (Collection.class.isAssignableFrom(target)) {
+            return convert(source, (Class<Collection<?>>) target, null);
         }
 
         throw ConverterExceptionUtil.targetIllegalArgument("java.util.List", target);
@@ -65,7 +66,7 @@ public abstract class ListTargetConverter implements Converter {
                 throw ConverterExceptionUtil.targetIllegalArgument("Actual type arguments of 'target'", "Type[(size == 1)]", target);
             }
 
-            return convert(source, (Class<List<?>>) classTarget, genericType);
+            return convert(source, (Class<Collection<?>>) classTarget, genericType);
         }
 
 
@@ -75,14 +76,14 @@ public abstract class ListTargetConverter implements Converter {
 
 
     /**
-     * 将目标对象 source 转化为目标类型的List的转化方法。
+     * 将目标对象 source 转化为目标类型的Collection的转化方法。
      *
      * @param source         转化目标
-     * @param targetListType 目标类型。如果使用 {@code List.class}, 则默认使用 {@link java.util.ArrayList}.
-     *                       如果想要使用一个自定义元素类型，需要保证此类型能够通过无参构建实例化，并且能够使用 {@link List#add(Object)} 来添加元素。
+     * @param targetCollectionType 目标类型。如果使用 {@code List.class}, 则默认使用 {@link java.util.ArrayList}, 如果使用 {@code Set.class}, 则默认使用 {@link java.util.HashSet}.
+     *                       如果想要使用一个自定义元素类型，需要保证此类型能够通过无参构建实例化，并且能够使用 {@link Collection#add(Object)} 来添加元素。
      * @param elementType    列表的元素类型。如果此类型为null，则由实现者自行决定所默认的元素类型。
      * @param <T>            最终的列表类型。
      * @return List value.
      */
-    public abstract <T, LT extends List<T>> LT convert(@NotNull Object source, @NotNull Class<List<?>> targetListType, @Nullable Type elementType);
+    public abstract <T, LT extends Collection<T>> LT convert(@NotNull Object source, @NotNull Class<Collection<?>> targetCollectionType, @Nullable Type elementType);
 }
