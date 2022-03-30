@@ -114,9 +114,11 @@ public class StringToArrayConverter implements StringSourceConverter {
      * @param source      目标对象
      * @param elementType 元素类型
      * @return 列表结果
+     * @throws ClassCastException 可能出现类型不匹配导致的类型转化异常。
+     * @throws ConvertException   可能存在类型转化异常。
      */
     @SuppressWarnings("unchecked")
-    public <T> T[] convertToArray(@NotNull String source, @Nullable Type elementType) {
+    public <T> T convertToArray(@NotNull String source, @Nullable Type elementType) {
         final Function<String, T> targetConverter;
         final Class<?> elementClass;
         if (null == elementType) {
@@ -130,8 +132,7 @@ public class StringToArrayConverter implements StringSourceConverter {
                 elementClass = Object.class;
                 targetConverter = str2Str();
             } else {
-                final TypeUtil.PrimitiveType primitiveType = TypeUtil.PrimitiveType.findByType(elementType);
-                elementClass = primitiveType == null ? (Class<?>) elementType : primitiveType.getType();
+                elementClass = (Class<?>) elementType;
                 targetConverter = numberOrOtherConverter(elementType);
             }
         } else {
@@ -139,13 +140,36 @@ public class StringToArrayConverter implements StringSourceConverter {
         }
 
         final String[] splitArray = SPLIT_PATTERN.split(source);
-        final T[] array = (T[]) Array.newInstance(elementClass, splitArray.length);
+        final Object array = Array.newInstance(elementClass, splitArray.length);
 
         for (int i = 0; i < splitArray.length; i++) {
-            array[i] = targetConverter.apply(splitArray[i]);
+            Array.set(array, i, targetConverter.apply(splitArray[i]));
         }
 
-        return array;
+        return (T) array;
+    }
+
+    /**
+     * 将目标字符串转化为数组。
+     * <p>
+     * <b>需要注意，无法转化为基础数据类型的数组，例如 {@code int[]}.</b>
+     * <p>
+     * 列表元素 {@code elementType} 支持的类型有：
+     * <ul>
+     *     <li>null / Object (作为字符串处理)</li>
+     *     <li>String</li>
+     *     <li>Number (会通过 {@link StringToNumberConverter} 下的相关转化器进行转化 )</li>
+     * </ul>
+     *
+     * @param source      目标对象
+     * @param elementType 元素类型
+     * @return 列表结果
+     * @throws ClassCastException 可能出现类型不匹配导致的类型转化异常。
+     * @throws ConvertException   可能存在类型转化异常。
+     * @see #convertToArray(String, Type)
+     */
+    public <T> T convertToArray(@NotNull String source, @Nullable Class<T> elementType) {
+        return convertToArray(source, (Type) elementType);
     }
 
 
