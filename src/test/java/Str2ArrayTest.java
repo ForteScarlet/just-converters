@@ -27,7 +27,7 @@ public class Str2ArrayTest {
     @Test
     public void str2IntArray() {
         final String str = "1,2,3,4 , 5, 6 ,7";
-        final Integer[] array = STRING_TO_ARRAY_CONVERTER.convert(str, Integer[].class);
+        final int[] array = STRING_TO_ARRAY_CONVERTER.convert(str, int[].class);
 
         System.out.println(Arrays.toString(array));
         assert array.length == 7;
