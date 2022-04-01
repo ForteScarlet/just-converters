@@ -19,7 +19,7 @@ public abstract class ClassTargetConverter implements Converter {
     public <T> T convert(@NotNull Object source, @NotNull Type target) {
         if (target instanceof Class) {
             Class<T> targetClass = (Class<T>) target;
-            return targetClass.cast(target);
+            return targetClass.cast(convertByClass(source, targetClass));
         }
 
         throw ConverterExceptionUtil.targetIllegalArgument("java.lang.Class", target);
