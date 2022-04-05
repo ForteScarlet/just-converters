@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -46,7 +45,7 @@ public class StringToTimeConverter extends StringSourceClassTargetConverter {
 
     // todo
 
-    private DateFormat dateFormat = SimpleDateFormat.getDateInstance();
+    private DateFormat dateFormat = DateFormat.getDateInstance();
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
