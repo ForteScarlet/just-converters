@@ -3,8 +3,13 @@ package love.forte.utils.converter.string;
 import love.forte.utils.converter.ConvertException;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +46,9 @@ public class StringToTimeConverter extends StringSourceClassTargetConverter {
 
     // todo
 
-    private SimpleDateFormat dateFormat;
+    private DateFormat dateFormat = SimpleDateFormat.getDateInstance();
+
+    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 
     private final Map<Class<?>, ThrowableFunction<String, Object>> convertersMap;
@@ -95,8 +102,37 @@ public class StringToTimeConverter extends StringSourceClassTargetConverter {
         return dateFormat.parse(source);
     }
 
+    //region Local date time
+    /**
+     * {@link String} 转化为 {@link LocalDateTime}.
+     *
+     * @param source source string.
+     * @return local date time.
+     */
+    public LocalDateTime convertToLocalDateTime(String source) {
+        return LocalDateTime.parse(source, dateTimeFormatter);
+    }
 
+    /**
+     * {@link String} 转化为 {@link LocalDate}.
+     *
+     * @param source source string.
+     * @return local date.
+     */
+    public LocalDate convertToLocalDate(String source) {
+        return LocalDate.parse(source, dateTimeFormatter);
+    }
 
+    /**
+     * {@link String} 转化为 {@link LocalTime}.
+     *
+     * @param source source string.
+     * @return local time.
+     */
+    public LocalTime convertToLocalTime(String source) {
+        return LocalTime.parse(source, dateTimeFormatter);
+    }
+    //endregion
 
 
     @FunctionalInterface
